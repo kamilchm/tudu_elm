@@ -5,7 +5,7 @@ import GraphQL.Client.Http as GraphQLClient
 
 type alias Model =
     { projects : List Project
-    , error : Maybe GraphQLClient.Error
+    , error : Maybe String
     }
 
 
