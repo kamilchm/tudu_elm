@@ -4,7 +4,7 @@ module View exposing (..)
 import Html exposing (Html, div, text)
 import Html.Attributes exposing (class)
 
-import Update exposing (Msg)
+import Msgs exposing (Msg)
 import Models exposing (Model)
 import Projects.List
 

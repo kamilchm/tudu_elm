@@ -3,7 +3,7 @@ module Projects.List exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (class)
-import Update exposing (Msg)
+import Msgs exposing (Msg)
 import Models exposing (Project)
 
 
