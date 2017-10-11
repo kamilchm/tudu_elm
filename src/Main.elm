@@ -6,13 +6,11 @@ import Models exposing (Model, initialModel)
 import Msgs exposing(Msg)
 import Update exposing (update)
 import View exposing (view)
-import Commands exposing (loadProjects)
-
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( initialModel, loadProjects )
+    ( initialModel, Cmd.none )
 
 
 

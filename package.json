@@ -7,7 +7,7 @@
   "author": "Kamil Chmielewski",
   "license": "MIT",
   "dependencies": {
-    "ace-css": "^1.1.0",
+    "bulma": "^0.6.0",
     "css-loader": "^0.28.7",
     "elm-graphql": "^1.0.6",
     "elm-webpack-loader": "^4.3.1",

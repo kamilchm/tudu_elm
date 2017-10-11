@@ -1,13 +1,13 @@
 module Msgs exposing (..)
 
-import Models exposing (Project)
+import Models exposing (Task)
 
 
 type Msg 
-    = LoadProjects ProjectsResponse
+    = LoadTasks TasksResponse
 
 
-type alias ProjectsResponse =
-    { projects : Maybe (List Project)
+type alias TasksResponse =
+    { projects : Maybe (List Task)
     , error : Maybe String
     }
