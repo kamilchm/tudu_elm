@@ -1,5 +1,7 @@
 module Models exposing (..)
 
+import Timer exposing (Context)
+
 
 type alias Task =
     { id : Int
@@ -7,6 +9,7 @@ type alias Task =
     , project : String
     , completed : Bool
     }
+
 
 type alias Pomodoro =
     { id : Int
@@ -16,10 +19,12 @@ type alias Pomodoro =
     , taskId : Int
     }
 
+
 type alias Model =
     { tasks : List Task
     , pomodoros : List Pomodoro
     , error : Maybe String
+    , timer : Timer.Context
     }
 
 
@@ -28,6 +33,7 @@ initialModel =
     { tasks = initialTasks
     , pomodoros = initialPomodoros
     , error = Nothing
+    , timer = { now = 0, stop = Nothing }
     }
 
 

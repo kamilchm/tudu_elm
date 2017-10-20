@@ -8,20 +8,22 @@ import Models exposing (Task)
 
 view : List Task -> Html Msg
 view tasks =
-    section [ class "section" ]
-        [ nav [ class "panel column" ] (List.map taskRow tasks)
-        ]
+    nav [ class "panel" ] (List.map taskRow tasks)
 
 
 taskRow : Task -> Html Msg
 taskRow task =
-    a [ class "panel-block" ]
+    a [ class "panel-block columns" ]
         [ div [ class "column is-two-thirds" ]
-            [ span [ class "icon" ] [ i [ class "fa fa-circle-o" ] [] ]
+            [ span [ class "icon" ]
+                [ i [ class "fa fa-circle-o" ] []
+                ]
             , text task.title
             ]
         , div [ class "column" ]
-            [ span [ class "tag is-primary" ] [ text task.project ]
+            [ span [ class "tag is-primary" ]
+                [ text task.project
+                ]
             ]
         , div [ class "column has-text-right" ]
             [ span [ class "icon" ] [ i [ class "fa fa-edit" ] [] ]
