@@ -26,5 +26,8 @@
     "build": "webpack",
     "client": "webpack-dev-server --port 3000",
     "start": "nf start"
+  },
+  "devDependencies": {
+    "webpack-pwa-manifest": "^3.3.2"
   }
 }
