@@ -33,12 +33,7 @@ view model =
             ]
         , div [ class "columns is-centered" ]
             [ div [ class "column is-11" ]
-                [ content model
+                [ Tasks.List.view model.tasks
                 ]
             ]
         ]
-
-
-content : Model -> Html Msg
-content model =
-    Tasks.List.view model.tasks
