@@ -42,7 +42,7 @@ update msg model =
                 oldTimer =
                     model.timer
             in
-                ( { model | timer = { oldTimer | now = now, stop = Just (now + model.config.pomoTime) } }, Cmd.none )
+                ( { model | timer = { oldTimer | now = now, stop = Just (now + model.config.pomoTime + (0.5 * second)) } }, Cmd.none )
 
         TimerStartNow ->
             ( model, Task.perform TimerStart Time.now )
