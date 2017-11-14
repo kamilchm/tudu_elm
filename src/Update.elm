@@ -4,7 +4,8 @@ import Models exposing (Model)
 import Msgs exposing (..)
 import Time exposing (every, second, minute)
 import Task exposing (perform)
-import Timer exposing (isRunning)
+import Timer exposing (isRunning, willEnd)
+import Ports exposing (pomoEnd)
 
 
 -- SUBSCRIPTIONS
@@ -27,17 +28,21 @@ update msg model =
     case msg of
         TimerTick newTime ->
             let
-                oldTimer =
-                    model.timer
+                oldTimer = model.timer
             in
-                ( { model | timer = { oldTimer | now = newTime } }, Cmd.none )
+                ( { model | timer = { oldTimer | now = newTime } }
+                , if Timer.willEnd oldTimer newTime then
+                    pomoEnd "Have a break!"
+                  else
+                    Cmd.none
+                )
 
-        TimerStart time ->
+        TimerStart now ->
             let
                 oldTimer =
                     model.timer
             in
-                ( { model | timer = { oldTimer | now = time, stop = Just (time + 25 * minute) } }, Cmd.none )
+                ( { model | timer = { oldTimer | now = now, stop = Just (now + model.config.pomoTime) } }, Cmd.none )
 
         TimerStartNow ->
             ( model, Task.perform TimerStart Time.now )

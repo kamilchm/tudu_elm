@@ -1,5 +1,6 @@
 module Models exposing (..)
 
+import Time exposing (Time, minute)
 import Timer exposing (Context)
 
 
@@ -25,6 +26,12 @@ type alias Model =
     , pomodoros : List Pomodoro
     , error : Maybe String
     , timer : Timer.Context
+    , config : Config
+    }
+
+
+type alias Config =
+    { pomoTime : Time
     }
 
 
@@ -34,6 +41,7 @@ initialModel =
     , pomodoros = initialPomodoros
     , error = Nothing
     , timer = { now = 0, stop = Nothing }
+    , config = { pomoTime = 25 * minute }
     }
 
 

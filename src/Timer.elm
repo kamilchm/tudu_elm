@@ -1,4 +1,4 @@
-module Timer exposing (Config, Context, view, isRunning)
+module Timer exposing (Config, Context, view, isRunning, willEnd)
 
 import Time exposing (Time)
 import Date exposing (fromTime, minute)
@@ -39,6 +39,10 @@ isRunning context =
                 False
 
 
+willEnd : Context -> Time -> Bool
+willEnd context newTime =
+    isRunning context && not (isRunning { context | now = newTime} )
+
 
 --- VIEW
 
@@ -65,7 +69,10 @@ view config context =
 
 timeLeft : Context -> Time
 timeLeft context =
-    (Maybe.withDefault context.now context.stop) - context.now
+    if isRunning context then
+        (Maybe.withDefault context.now context.stop) - context.now
+    else
+        0
 
 
 format : Time -> String
