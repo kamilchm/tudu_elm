@@ -3,7 +3,7 @@ module App exposing (..)
 import Date exposing (Date, fromTime)
 import Time exposing (Time, every, second, minute)
 import Task exposing (perform)
-import Ports exposing (pomoEnd)
+import Ports exposing (pomoEnd, logError)
 
 import Pomodoro exposing (..)
 
@@ -74,7 +74,7 @@ update msg model = case model of
             ( Running state ( start ( fromTime now ) )
                       ( now + state.config.pomoTime + (0.5 * second ) ) now
             , Cmd.none )
-        _ -> ( model, Cmd.none )
+        _ -> incorrectMsg msg model
 
     Running state pomodoro timerEnd now -> case msg of
         TimerTick newTime ->
@@ -85,7 +85,7 @@ update msg model = case model of
         TimerCancel -> ( Waiting state, Cmd.none )
         TimerStop -> ( (Submitting state pomodoro ( fromTime now ) "")
                      , pomoEnd "Have a break!" )
-        _ -> ( model, Cmd.none )
+        _ -> incorrectMsg msg model
 
     Submitting state pomodoro date description -> case msg of
         SubmitChange date description ->
@@ -97,4 +97,10 @@ update msg model = case model of
                 ( Waiting { state | pomodoros = pomodoros }
                 , Cmd.none
                 )
-        _ -> ( model, Cmd.none )
+        _ -> incorrectMsg msg model
+
+
+incorrectMsg : Msg -> Model -> ( Model, Cmd Msg )
+incorrectMsg msg model =
+    ( model, logError
+        ("Incorrect messgage " ++ (toString msg) ++ " in state " ++ toString(model)) )

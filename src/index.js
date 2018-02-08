@@ -29,3 +29,5 @@ app.ports.pomoEnd.subscribe(function(msg) {
         }
     }
 });
+
+app.ports.logError.subscribe(console.error)
