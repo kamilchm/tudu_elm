@@ -13,7 +13,7 @@ import Bulma.Timer as Timer exposing (..)
 
 timerConfig : Timer.Config Msg
 timerConfig =
-    { startMsg = TimerStartNow 
+    { startMsg = TimerStart 
     , cancelMsg = TimerCancel
     }
 

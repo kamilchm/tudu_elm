@@ -44,8 +44,8 @@ initialModel = Waiting
 
 type Msg
     = TimerTick Time
-    | TimerStartNow
-    | TimerStart Time
+    | TimerStart
+    | TimerStartAt Time
     | TimerCancel
     | TimerStop
     | SubmitChange Date String
@@ -68,9 +68,9 @@ subscriptions model =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model = case model of
     Waiting state -> case msg of
-        TimerStartNow ->
-            ( model, Task.perform TimerStart Time.now )
-        TimerStart now ->
+        TimerStart ->
+            ( model, Task.perform TimerStartAt Time.now )
+        TimerStartAt now ->
             ( Running state ( start ( fromTime now ) )
                       ( now + state.config.pomoTime + (0.5 * second ) ) now
             , Cmd.none )
