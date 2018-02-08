@@ -1,4 +1,4 @@
-module Timer exposing (Config, Context, view, isRunning)
+module Bulma.Timer exposing (Config, Context, view, isRunning)
 
 import Time exposing (Time)
 import Date exposing (fromTime, minute)

@@ -1,7 +1,8 @@
 module Main exposing (..)
 
 import Html exposing (program)
-import App exposing (Model, initialModel, Msg, update, subscriptions, view)
+import App exposing (Model, initialModel, Msg, update, subscriptions)
+import Bulma.View exposing (view)
 
 
 init : ( Model, Cmd Msg )

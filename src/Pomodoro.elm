@@ -1,27 +1,26 @@
-module Pomodoro exposing (Pomodoro, start, complete, cancel)
+module Pomodoro exposing (Pomodoro, Ended, Completed, start, complete, cancel)
 
 import Date exposing (Date)
 
 
-type Tags = List String
+type alias Tags = List String
 
 type alias Pomodoro = Started {}
 
 type alias Started p = { p | start : Date }
 
+type alias Ended p = Started { p | end : Date }
 
 type alias Completed = 
-   Started
-   { end : Date
-   , details : String
+   Ended
+   { details : String
    , tags : Tags
    }
 
 
 type alias Cancelled =
-    Started
-    { end : Date
-    , details : Maybe String
+    Ended
+    { details : Maybe String
     , tags : Tags
     }
 

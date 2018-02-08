@@ -1,12 +1,9 @@
 module App exposing (..)
 
+import Date exposing (Date, fromTime)
 import Time exposing (Time, every, second, minute)
 import Task exposing (perform)
-import Timer exposing (Context, isRunning)
 import Ports exposing (pomoEnd)
-
-import Html exposing (Html, map, div, text, a, node)
-import Html.Attributes exposing (class, href, attribute)
 
 import Pomodoro exposing (..)
 
@@ -19,15 +16,18 @@ type alias Config =
 
 
 type alias State =
-    { pomodoros : List Pomodoro
+    { pomodoros : List Completed
     , error : Maybe String
     , config : Config
     }
 
 
+type alias TimerEnd = Time
+type alias Now = Time
 type Model 
     = Waiting State
-    | Running State Timer.Context
+    | Running State Pomodoro TimerEnd Now
+    | Submitting State Pomodoro Date String
 
 
 initialModel : Model
@@ -48,6 +48,8 @@ type Msg
     | TimerStart Time
     | TimerCancel
     | TimerStop
+    | SubmitChange Date String
+    | Submit
 
 
 -- SUBSCRIPTIONS
@@ -56,7 +58,7 @@ type Msg
 subscriptions : Model -> Sub Msg
 subscriptions model =
     case model of
-        Running _ _ -> every second TimerTick
+        Running _ _ _ _ -> every second TimerTick
         _ -> Sub.none
 
 
@@ -64,61 +66,35 @@ subscriptions model =
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
-    case msg of
-        TimerTick newTime ->
-            case model of
-                Running state timer ->
-                    if timer.stop <= newTime then
-                        update TimerStop model
-                    else
-                        ( Running state { timer | now = newTime }, Cmd.none )
-                _ -> ( model, Cmd.none )
-
-        TimerStart now ->
-            case model of
-                Waiting state ->
-                    ( Running state { now = now, stop = now + state.config.pomoTime + (0.5 * second) }, Cmd.none )
-                _ -> ( model, Cmd.none )
-
+update msg model = case model of
+    Waiting state -> case msg of
         TimerStartNow ->
             ( model, Task.perform TimerStart Time.now )
+        TimerStart now ->
+            ( Running state ( start ( fromTime now ) )
+                      ( now + state.config.pomoTime + (0.5 * second ) ) now
+            , Cmd.none )
+        _ -> ( model, Cmd.none )
 
-        TimerCancel ->
-            case model of
-                Running state _ -> ( Waiting state, Cmd.none )
-                _ -> ( model, Cmd.none )
+    Running state pomodoro timerEnd now -> case msg of
+        TimerTick newTime ->
+            if timerEnd <= newTime then
+                update TimerStop model
+            else
+                ( Running state pomodoro timerEnd newTime, Cmd.none )
+        TimerCancel -> ( Waiting state, Cmd.none )
+        TimerStop -> ( (Submitting state pomodoro ( fromTime now ) "")
+                     , pomoEnd "Have a break!" )
+        _ -> ( model, Cmd.none )
 
-        TimerStop ->
-            case model of
-                Running state _ -> ( Waiting state, pomoEnd "Have a break!" )
-                _ -> ( model, Cmd.none )
-
-
-timerConfig : Timer.Config Msg
-timerConfig =
-    { startMsg = TimerStartNow 
-    , cancelMsg = TimerCancel
-    }
-
-
-view : Model -> Html Msg
-view model =
-    div []
-        [ node "nav"
-            [ attribute "aria-label" "main navigation", class "navbar container is-fluid is-info", attribute "role" "navigation" ]
-            [ div [ class "navbar-brand" ]
-                [ a [ class "navbar-item", href "#" ] [ text "tudu" ]
-                , a [ class "navbar-item", href "#" ] [ text "Tasks" ]
-                , a [ class "navbar-item", href "#" ] [ text "Pomodoros" ]
-                ]
-            ]
-        , div [ class "columns is-centered" ]
-            [ div [ class "column is-one-third" ]
-                [ Timer.view timerConfig (case model of
-                        Running _ timer -> Just timer
-                        _ -> Nothing
-                    )
-                ]
-            ]
-        ]
+    Submitting state pomodoro date description -> case msg of
+        SubmitChange date description ->
+            ( Submitting state pomodoro date description, Cmd.none )
+        Submit ->
+            let
+                pomodoros = ( pomodoro |> complete date description [] ) :: state.pomodoros
+            in
+                ( Waiting { state | pomodoros = pomodoros }
+                , Cmd.none
+                )
+        _ -> ( model, Cmd.none )
