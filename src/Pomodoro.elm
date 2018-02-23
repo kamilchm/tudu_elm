@@ -1,4 +1,4 @@
-module Pomodoro exposing (Pomodoro, Ended, Completed, start, complete, cancel)
+module Pomodoro exposing (Pomodoro, Started, Ended, Completed, start, complete, cancel)
 
 import Date exposing (Date)
 

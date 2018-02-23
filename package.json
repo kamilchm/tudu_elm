@@ -9,6 +9,7 @@
   "dependencies": {
     "bulma": "^0.6.0",
     "css-loader": "^0.28.7",
+    "dexie": "^2.0.1",
     "elm-graphql": "^1.0.6",
     "elm-webpack-loader": "^4.3.1",
     "file-loader": "^0.11.2",

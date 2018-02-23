@@ -3,7 +3,10 @@ module App exposing (..)
 import Date exposing (Date, fromTime)
 import Time exposing (Time, every, second, minute)
 import Task exposing (perform)
+
 import Ports exposing (pomoEnd, logError)
+
+import PortsStorage as Store exposing (add, loading, Msg(..))
 
 import Pomodoro exposing (..)
 
@@ -25,13 +28,14 @@ type alias State =
 type alias TimerEnd = Time
 type alias Now = Time
 type Model 
-    = Waiting State
+    = Loading State
+    | Waiting State
     | Running State Pomodoro TimerEnd Now
     | Submitting State Pomodoro Date String
 
 
 initialModel : Model
-initialModel = Waiting
+initialModel = Loading
     { pomodoros = []
     , error = Nothing
     , config = { pomoTime = 25 * 60 * second }
@@ -50,6 +54,8 @@ type Msg
     | TimerStop
     | SubmitChange Date String
     | Submit
+    | Loaded (List Completed)
+    | LoadError String
 
 
 -- SUBSCRIPTIONS
@@ -58,6 +64,9 @@ type Msg
 subscriptions : Model -> Sub Msg
 subscriptions model =
     case model of
+        Loading _ -> Sub.map (\msg -> case msg of
+                                    Store.Loaded pomos -> Loaded pomos
+                                    Store.LoadError err -> LoadError err) Store.loading
         Running _ _ _ _ -> every second TimerTick
         _ -> Sub.none
 
@@ -67,6 +76,10 @@ subscriptions model =
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model = case model of
+    Loading state -> case msg of
+        Loaded pomodoros ->
+            ( Waiting { state | pomodoros = pomodoros }, Cmd.none)
+        _ -> incorrectMsg msg model
     Waiting state -> case msg of
         TimerStart ->
             ( model, Task.perform TimerStartAt Time.now )
@@ -92,10 +105,11 @@ update msg model = case model of
             ( Submitting state pomodoro date description, Cmd.none )
         Submit ->
             let
-                pomodoros = ( pomodoro |> complete date description [] ) :: state.pomodoros
+                newPomo = pomodoro |> complete date description []
+                pomodoros = newPomo :: state.pomodoros
             in
                 ( Waiting { state | pomodoros = pomodoros }
-                , Cmd.none
+                , Store.add newPomo
                 )
         _ -> incorrectMsg msg model
 

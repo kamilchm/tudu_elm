@@ -6,6 +6,8 @@ require('bulma/css/bulma.css');
 // Require index.html so it gets copied to dist
 require('./index.html');
 
+import { load, add } from './storage'
+
 var Elm = require('./Main.elm');
 var mountNode = document.getElementById('main');
 
@@ -30,4 +32,7 @@ app.ports.pomoEnd.subscribe(function(msg) {
     }
 });
 
-app.ports.logError.subscribe(console.error)
+app.ports.logError.subscribe(console.error);
+
+app.ports.storePomodoro.subscribe(add);
+load(app.ports.loadPomodoros.send);
